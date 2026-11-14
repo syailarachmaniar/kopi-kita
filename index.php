@@ -40,6 +40,23 @@ $orderUrl = url('menu.php');
   </div>
 </div></section>
 
+<section class="section" id="categories" style="padding-bottom:0">
+  <div class="container">
+    <div class="section-head reveal"><div><span class="eyebrow">Kategori Menu</span><h2>Pilih <em>Kategori</em></h2></div></div>
+    <div class="cat-grid">
+      <?php foreach (get_categories() as $hc):
+        $hp = get_products(['category' => $hc['slug']]);
+        $cover = $hp[0] ?? null;
+        foreach ($hp as $x) if ($x['is_best_seller']) { $cover = $x; break; } ?>
+      <a class="cat-card reveal" href="<?= url('menu.php?cat=' . urlencode($hc['slug'])) ?>">
+        <img src="<?= e(product_image($cover['image'] ?? null)) ?>" alt="<?= e($hc['name']) ?>" loading="lazy">
+        <div class="cat-info"><h3><?= e($hc['name']) ?></h3><span><?= count($hp) ?> menu</span></div>
+      </a>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="best">
   <div class="container">
     <div class="section-head reveal">

@@ -64,6 +64,17 @@
     if (init) { const b = $$('.chip', group).find(x => x.dataset.value === init); if (b) b.click(); }
     apply();
   });
+  // Pencarian tanpa chip (halaman menu per kategori: kategori sudah difilter server)
+  $$('[data-search]').forEach(inp => {
+    const t = inp.dataset.search;
+    if ($('[data-chips="' + t + '"]')) return;
+    const items = $$('[data-item="' + t + '"]'), empty = $('[data-empty="' + t + '"]');
+    inp.addEventListener('input', () => {
+      const q = inp.value.trim().toLowerCase(); let n = 0;
+      items.forEach(it => { const ok = !q || (it.dataset.name || '').includes(q); it.classList.toggle('hide', !ok); it.hidden = !ok; if (ok) n++; });
+      if (empty) empty.hidden = n !== 0;
+    });
+  });
   const fo = new URLSearchParams(location.search).get('focus');
   const si = $('[data-search]'); if (fo && si) si.focus();
 

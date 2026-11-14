@@ -20,6 +20,17 @@ $nav = ['home' => ['Home', 'index.php'], 'menu' => ['Menu', 'menu.php'], 'galler
 </head>
 <body class="site <?= e($bodyClass ?? '') ?>">
 <div class="bg-beans" aria-hidden="true"></div>
+<style>
+/* Dropdown kategori (disertakan di sini agar tetap rapi walau style.css belum diperbarui) */
+.nav-links .has-sub{position:relative}
+.nav-links .caret{font-size:.7em;opacity:.7}
+.nav-links .sub{position:absolute;top:100%;left:0;min-width:200px;background:#3a2418;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:.5rem;list-style:none;margin:0;display:none;z-index:60;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.nav-links .has-sub:hover .sub,.nav-links .has-sub:focus-within .sub{display:block}
+.nav-links .sub li{display:block;margin:0}
+.nav-links .sub a{display:block;padding:.5rem .8rem;border-radius:8px;white-space:nowrap}
+.nav-links .sub a:hover{background:rgba(255,255,255,.07)}
+@media(max-width:900px){.nav-links .sub{position:static;display:block;box-shadow:none;border:0;background:transparent;padding:0 0 0 1rem}}
+</style>
 <header class="navbar-wrap">
   <nav class="navbar" aria-label="Navigasi utama">
     <a class="brand" href="<?= url('index.php') ?>">
@@ -29,7 +40,15 @@ $nav = ['home' => ['Home', 'index.php'], 'menu' => ['Menu', 'menu.php'], 'galler
     <button class="nav-toggle" aria-label="Buka menu" aria-expanded="false" aria-controls="navMenu"><span></span><span></span><span></span></button>
     <ul class="nav-links" id="navMenu">
       <?php foreach ($nav as $k => [$label, $href]): ?>
+        <?php if ($k === 'menu'): $navCats = get_categories(); ?>
+        <li class="has-sub"><a href="<?= url($href) ?>" class="<?= $active === $k ? 'active' : '' ?>"><?= e($label) ?> <span class="caret" aria-hidden="true">▾</span></a>
+          <ul class="sub">
+            <li><a href="<?= url('menu.php') ?>">Semua Menu</a></li>
+            <?php foreach ($navCats as $nc): ?><li><a href="<?= url('menu.php?cat=' . urlencode($nc['slug'])) ?>"><?= e($nc['name']) ?></a></li><?php endforeach; ?>
+          </ul></li>
+        <?php else: ?>
         <li><a href="<?= url($href) ?>" class="<?= $active === $k ? 'active' : '' ?>"><?= e($label) ?></a></li>
+        <?php endif; ?>
       <?php endforeach; ?>
       <li class="nav-mobile-only">
         <?php if ($user): ?><a href="<?= url(home_for_role($user['role'])) ?>">Akun Saya</a><?php else: ?><a href="<?= url('login.php') ?>">Sign In</a><?php endif; ?>

@@ -3,10 +3,10 @@ require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../config/database.php';
 
 /* ---------- Helper umum ---------- */
-function e($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+function e(mixed $v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 function url(string $path = ''): string { return BASE_URL . '/' . ltrim($path, '/'); }
 function asset(string $path): string { return url('assets/' . ltrim($path, '/')); }
-function rupiah($n): string { return 'Rp' . number_format((float)$n, 0, ',', '.'); }
+function rupiah(int|float|string|null $n): string { return 'Rp' . number_format((float)$n, 0, ',', '.'); }
 function redirect(string $path): void
 {
     if (!preg_match('#^(https?:)?//#', $path) && strpos($path, BASE_URL . '/') !== 0 && $path !== BASE_URL) {
@@ -21,7 +21,7 @@ function slugify(string $s): string
     $s = preg_replace('/[^a-z0-9]+/', '-', $s);
     return trim($s, '-') ?: 'item';
 }
-function fmt_date($d, bool $time = true): string
+function fmt_date(?string $d, bool $time = true): string
 {
     if (!$d) return '-';
     return date($time ? 'd M Y, H:i' : 'd M Y', strtotime($d));
@@ -64,22 +64,80 @@ function csrf_check(): void
 function is_post(): bool { return ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST'; }
 
 /* ---------- Gambar ---------- */
-function product_image(?string $img): string
+/**
+ * Lokasi foto (relatif terhadap folder assets/). Urutan = prioritas pencarian.
+ * Struktur yang dipakai:  assets/img/Product/<Folder Kategori>/<foto>   dan   assets/img/Gallery/<foto>
+ * Kolom products.image berisi path relatif terhadap folder Product, contoh: "Coffe/Espresso.jpg".
+ */
+/** Normalisasi nama agar "Coffe Latte.jpg", "coffe-latte.JPEG" dan "CoffeLatte" dianggap sama. */
+function img_key(string $name): string
 {
-    if ($img && is_file(APP_ROOT . '/assets/images/products/' . basename($img))) {
-        return asset('images/products/' . rawurlencode(basename($img)));
-    }
-    return asset('images/ui/hero.svg');
+    $name = preg_replace('/\.(jpe?g|png|webp|gif|avif)$/i', '', basename(str_replace('\\', '/', $name)));
+    return preg_replace('/[^a-z0-9]+/', '', strtolower($name));
 }
-function gallery_image(?string $img): string
+
+/** Indeks seluruh foto di assets/img (rekursif, semua subfolder). Dibuat sekali per request. */
+function image_index(): array
 {
-    if ($img && is_file(APP_ROOT . '/assets/images/gallery/' . basename($img))) {
-        return asset('images/gallery/' . rawurlencode(basename($img)));
+    static $idx = null;
+    if ($idx !== null) return $idx;
+    $idx = ['path' => [], 'key' => []];
+    $root = APP_ROOT . '/assets/img';
+    if (!is_dir($root)) return $idx;
+    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS));
+    foreach ($it as $f) {
+        if (!$f->isFile() || !preg_match('/\.(jpe?g|png|webp|gif|avif)$/i', $f->getFilename())) continue;
+        $rel = ltrim(str_replace('\\', '/', substr($f->getPathname(), strlen($root))), '/');
+        $idx['path'][strtolower($rel)] = $rel;
+        $idx['key'][img_key($f->getFilename())][] = $rel;
     }
-    return asset('images/ui/hero.svg');
+    return $idx;
 }
-/** Upload gambar (JPG/PNG/WEBP, maks 2 MB). Mengembalikan nama file atau null. Melempar RuntimeException bila gagal. */
-function upload_image(array $file, string $subdir): ?string
+
+/** Pilih file terbaik: untuk produk utamakan path berisi folder "Product"; untuk galeri hindari folder "Product". */
+function pick_image(array $cands, string $kind): ?string
+{
+    if (!$cands) return null;
+    usort($cands, function ($a, $b) use ($kind) {
+        $score = function ($p) use ($kind) {
+            $inProduct = (bool)preg_match('#(^|/)product#i', $p);
+            $inGallery = (bool)preg_match('#(^|/)gallery#i', $p);
+            if ($kind === 'product') return ($inProduct ? 2 : 0) - ($inGallery && !$inProduct ? 1 : 0);
+            return ($inGallery && !$inProduct ? 2 : 0) - ($inProduct ? 1 : 0);
+        };
+        return $score($b) <=> $score($a) ?: strcmp($a, $b);
+    });
+    return $cands[0];
+}
+
+/** Cari foto: path persis → nama file di folder mana pun → nama dinormalisasi. Hasil: URL ter-encode atau null. */
+function find_image_url(?string $rel, string $kind): ?string
+{
+    if (!$rel) return null;
+    $rel = ltrim(str_replace('\\', '/', $rel), '/');
+    if (strpos($rel, '..') !== false) return null;
+    $idx = image_index();
+    $found = null;
+    // 1) path persis (relatif terhadap assets/img atau terhadap folder Product/Gallery di dalamnya)
+    $exact = [];
+    foreach ($idx['path'] as $lower => $orig) {
+        $l = strtolower($rel);
+        if ($lower === $l || substr($lower, -strlen($l) - 1) === '/' . $l) $exact[] = $orig;
+    }
+    $found = pick_image($exact, $kind);
+    // 2) nama file / nama ternormalisasi di subfolder mana pun
+    if (!$found) $found = pick_image($idx['key'][img_key($rel)] ?? [], $kind);
+    if (!$found) return null;
+    return asset(implode('/', array_map('rawurlencode', explode('/', 'img/' . $found))));
+}
+function product_image(?string $img): string { return find_image_url($img, 'product') ?? asset('images/ui/hero.svg'); }
+function gallery_image(?string $img): string { return find_image_url($img, 'gallery') ?? asset('images/ui/hero.svg'); }
+
+/** Folder tujuan upload dari admin (di dalam folder foto masing-masing). */
+function upload_dir(string $kind): string { return APP_ROOT . '/assets/img/' . ($kind === 'gallery' ? 'Gallery' : 'Product') . '/uploads'; }
+
+/** Upload gambar (JPG/PNG/WEBP, maks 2 MB). Mengembalikan path relatif ("uploads/xxxx.jpg") atau null. Melempar RuntimeException bila gagal. */
+function upload_image(array $file, string $kind): ?string
 {
     if (!isset($file['error']) || $file['error'] === UPLOAD_ERR_NO_FILE) return null;
     if ($file['error'] !== UPLOAD_ERR_OK) throw new RuntimeException('Upload gambar gagal (kode ' . (int)$file['error'] . ').');
@@ -87,18 +145,19 @@ function upload_image(array $file, string $subdir): ?string
     $info = @getimagesize($file['tmp_name']);
     $allowed = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp'];
     if (!$info || !isset($allowed[$info[2]])) throw new RuntimeException('Format gambar harus JPG, PNG, atau WEBP.');
-    $dir = APP_ROOT . '/assets/images/' . $subdir;
-    if (!is_dir($dir)) mkdir($dir, 0755, true);
+    $dir = upload_dir($kind);
+    if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) throw new RuntimeException('Folder upload tidak dapat dibuat.');
     $name = bin2hex(random_bytes(8)) . '.' . $allowed[$info[2]];
     if (!move_uploaded_file($file['tmp_name'], $dir . '/' . $name)) throw new RuntimeException('Gagal menyimpan gambar.');
-    return $name;
+    return 'uploads/' . $name;
 }
-function delete_image(?string $name, string $subdir): void
+function delete_image(?string $name, string $kind): void
 {
     if (!$name) return;
-    $p = APP_ROOT . '/assets/images/' . $subdir . '/' . basename($name);
-    // hanya hapus file hasil upload (nama acak), bukan gambar bawaan
-    if (preg_match('/^[a-f0-9]{16}\.(jpg|png|webp)$/', basename($name)) && is_file($p)) @unlink($p);
+    // hanya hapus file hasil upload admin (nama acak di folder uploads), bukan foto bawaan
+    if (!preg_match('#^uploads/[a-f0-9]{16}\.(jpg|png|webp)$#', str_replace('\\', '/', $name))) return;
+    $p = upload_dir($kind) . '/' . basename($name);
+    if (is_file($p)) @unlink($p);
 }
 
 /* ---------- Badge ---------- */
