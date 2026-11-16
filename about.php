@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/header.php';
   <div class="panel-box reveal" style="position:relative;overflow:hidden">
     <div class="about-watermark" aria-hidden="true">KopiKita</div>
     <div class="about-grid">
-      <div class="about-img"><img src="<?= asset('images/ui/about-1.svg') ?>" alt=""></div>
+      <div class="about-img"><img src="<?= asset('images/ui/about-1.jpg') ?>" alt=""></div>
       <div class="about-text">
         <p><?= e(APP_NAME) ?> lahir dari obrolan sederhana: bagaimana jika secangkir kopi enak bisa dinikmati siapa saja, di tempat yang hangat, dengan harga yang bersahabat?</p>
         <p>Kami bekerja sama dengan petani lokal, menyangrai biji secara berkala, dan melatih barista agar setiap cangkir konsisten. Selain kopi, kami menyajikan minuman non-kopi, pastry, dan racikan signature yang terus berkembang.</p>
@@ -18,7 +18,7 @@ require_once __DIR__ . '/includes/header.php';
           <div class="feature"><div class="fi">❦</div><h4>Berkelanjutan</h4><p>Peduli lingkungan dan petani.</p></div>
         </div>
       </div>
-      <div class="about-img"><img src="<?= asset('images/ui/about-2.svg') ?>" alt=""></div>
+      <div class="about-img"><img src="<?= asset('images/ui/about-2.jpg') ?>" alt=""></div>
     </div>
     <div class="stats"><div class="stat"><b>2026</b><span>Mulai Berdiri</span></div><div class="stat"><b>10+</b><span>Barista</span></div><div class="stat"><b>100%</b><span>Biji Lokal</span></div><div class="stat"><b>5K+</b><span>Pelanggan Bahagia</span></div></div>
   </div>

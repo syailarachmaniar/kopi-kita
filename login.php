@@ -32,7 +32,7 @@ require __DIR__ . '/includes/header.php';
 <div class="auth">
   <div class="auth-art"><span class="hero-tag">Selamat datang kembali</span><h2><?= e('A Little Coffee,') ?><br><em>A Lot</em> of Happiness.</h2><p>Masuk untuk memesan kopi favoritmu, melihat riwayat pesanan, dan mengelola kedai.</p></div>
   <div class="auth-form">
-    <a class="brand" href="<?= url('index.php') ?>"><img src="<?= asset('images/ui/logo.svg') ?>" alt="" width="44" height="44"><span><b>KopiKita</b><small>Coffee Shop</small></span></a>
+    <a class="brand" href="<?= url('index.php') ?>"><img src="<?= ui_image('logo-mark', 'logo') ?>" alt="" width="44" height="44"><span><b>KopiKita</b><small>Coffee Shop</small></span></a>
     <h1>Login</h1>
     <p>Gunakan username atau email Anda.</p>
     <?php if ($error): ?><div class="alert alert-error"><?= e($error) ?></div><?php endif; ?>

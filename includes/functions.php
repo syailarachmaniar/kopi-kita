@@ -76,20 +76,22 @@ function img_key(string $name): string
     return preg_replace('/[^a-z0-9]+/', '', strtolower($name));
 }
 
-/** Indeks seluruh foto di assets/img (rekursif, semua subfolder). Dibuat sekali per request. */
+/** Indeks seluruh foto di assets/img dan assets/images (rekursif, semua subfolder). Dibuat sekali per request. */
 function image_index(): array
 {
     static $idx = null;
     if ($idx !== null) return $idx;
     $idx = ['path' => [], 'key' => []];
-    $root = APP_ROOT . '/assets/img';
-    if (!is_dir($root)) return $idx;
-    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS));
-    foreach ($it as $f) {
-        if (!$f->isFile() || !preg_match('/\.(jpe?g|png|webp|gif|avif)$/i', $f->getFilename())) continue;
-        $rel = ltrim(str_replace('\\', '/', substr($f->getPathname(), strlen($root))), '/');
-        $idx['path'][strtolower($rel)] = $rel;
-        $idx['key'][img_key($f->getFilename())][] = $rel;
+    foreach (['img', 'images'] as $folder) {
+        $root = APP_ROOT . '/assets/' . $folder;
+        if (!is_dir($root)) continue;
+        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS));
+        foreach ($it as $f) {
+            if (!$f->isFile() || !preg_match('/\.(jpe?g|png|webp|gif|avif)$/i', $f->getFilename())) continue;
+            $rel = $folder . '/' . ltrim(str_replace('\\', '/', substr($f->getPathname(), strlen($root))), '/');
+            $idx['path'][strtolower($rel)] = $rel;          // relatif terhadap folder assets/
+            $idx['key'][img_key($f->getFilename())][] = $rel;
+        }
     }
     return $idx;
 }
@@ -128,10 +130,34 @@ function find_image_url(?string $rel, string $kind): ?string
     // 2) nama file / nama ternormalisasi di subfolder mana pun
     if (!$found) $found = pick_image($idx['key'][img_key($rel)] ?? [], $kind);
     if (!$found) return null;
-    return asset(implode('/', array_map('rawurlencode', explode('/', 'img/' . $found))));
+    return asset(implode('/', array_map('rawurlencode', explode('/', $found))));
 }
-function product_image(?string $img): string { return find_image_url($img, 'product') ?? asset('images/ui/hero.svg'); }
-function gallery_image(?string $img): string { return find_image_url($img, 'gallery') ?? asset('images/ui/hero.svg'); }
+/**
+ * Gambar antarmuka (logo, hero, about, favicon) di assets/images/ui.
+ * Ekstensi dicari otomatis (jpg, jpeg, png, webp, svg). Bila $name tidak ada, dicoba $fallback.
+ */
+function ui_image(string $name, ?string $fallback = null): string
+{
+    foreach (array_filter([$name, $fallback]) as $n) {
+        foreach (['jpg', 'jpeg', 'png', 'webp', 'svg'] as $ext) {
+            if (is_file(APP_ROOT . '/assets/images/ui/' . $n . '.' . $ext)) return asset('images/ui/' . $n . '.' . $ext);
+        }
+    }
+    return placeholder_image();
+}
+
+/** Gambar cadangan (SVG inline) — tetap tampil walau folder assets/images hilang. */
+function placeholder_image(): string
+{
+    $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#2b1a12"/>'
+         . '<ellipse cx="200" cy="262" rx="110" ry="22" fill="#e6d5c0"/><path d="M120 190h160v40a80 60 0 0 1-160 0z" fill="#fdf3e4"/>'
+         . '<path d="M280 205h22a24 24 0 0 1 0 48h-30" fill="none" stroke="#fdf3e4" stroke-width="10"/>'
+         . '<ellipse cx="200" cy="190" rx="80" ry="16" fill="#8a5a3c"/>'
+         . '<path d="M170 150c-14-20 14-30 0-50M215 150c-14-20 14-30 0-50" fill="none" stroke="#b99a80" stroke-width="6" stroke-linecap="round"/></svg>';
+    return 'data:image/svg+xml;base64,' . base64_encode($svg);
+}
+function product_image(?string $img): string { return find_image_url($img, 'product') ?? placeholder_image(); }
+function gallery_image(?string $img): string { return find_image_url($img, 'gallery') ?? placeholder_image(); }
 
 /** Folder tujuan upload dari admin (di dalam folder foto masing-masing). */
 function upload_dir(string $kind): string { return APP_ROOT . '/assets/img/' . ($kind === 'gallery' ? 'Gallery' : 'Product') . '/uploads'; }

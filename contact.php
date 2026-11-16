@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/header.php';
         <li><div class="ii">📞</div><div><b>Telepon / WhatsApp</b><?= e(SHOP_PHONE) ?></div></li>
         <li><div class="ii">✉</div><div><b>Email</b><?= e(SHOP_EMAIL) ?></div></li>
       </ul>
-      <iframe class="map-frame" title="Peta lokasi" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=119.38%2C-5.20%2C119.46%2C-5.10&amp;layer=mapnik"></iframe>
+      <iframe class="map-frame" title="Peta lokasi" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=114.62%2C-3.40%2C114.74%2C-3.28&amp;layer=mapnik"></iframe>
     </div>
     <div class="panel-box" style="padding:2rem">
       <h2>Kirim Pesan via WhatsApp</h2>

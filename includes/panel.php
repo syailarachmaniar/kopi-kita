@@ -9,7 +9,7 @@ function panel_start(string $title, string $active, array $nav, string $roleLabe
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($title) ?> – <?= e($roleLabel) ?> KopiKita</title>
-<link rel="icon" type="image/svg+xml" href="<?= asset('images/ui/favicon.svg') ?>">
+<link rel="icon" href="<?= ui_image('logo-mark', 'favicon') ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="<?= asset('css/admin.css') ?>">
@@ -17,7 +17,7 @@ function panel_start(string $title, string $active, array $nav, string $roleLabe
 </head>
 <body class="panel">
 <aside class="sidebar" id="sidebar">
-  <a class="side-brand" href="<?= url(home_for_role($u['role'])) ?>"><img src="<?= asset('images/ui/logo.svg') ?>" alt="" width="36" height="36"><span><b>KopiKita</b><small><?= e($roleLabel) ?></small></span></a>
+  <a class="side-brand" href="<?= url(home_for_role($u['role'])) ?>"><img src="<?= ui_image('logo-mark', 'logo') ?>" alt="" width="36" height="36"><span><b>KopiKita</b><small><?= e($roleLabel) ?></small></span></a>
   <nav>
     <?php foreach ($nav as $key => [$label, $href, $icon]): ?>
       <a href="<?= url($href) ?>" class="<?= $active === $key ? 'active' : '' ?>"><span class="ico"><?= $icon ?></span><?= e($label) ?></a>

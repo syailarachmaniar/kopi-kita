@@ -20,7 +20,7 @@
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="f-brand">
-      <a class="brand" href="<?= url('index.php') ?>"><img src="<?= asset('images/ui/logo.svg') ?>" alt="" width="40" height="40"><span><b>KopiKita</b><small>Est. 2026</small></span></a>
+      <a class="brand" href="<?= url('index.php') ?>"><img src="<?= ui_image('logo-mark', 'logo') ?>" alt="" width="40" height="40"><span><b>KopiKita</b><small>Est. 2026</small></span></a>
       <p class="serif"><em><?= e(APP_SLOGAN) ?></em></p>
     </div>
     <div><h4>Quick Links</h4><ul>

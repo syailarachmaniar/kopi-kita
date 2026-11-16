@@ -28,7 +28,7 @@ $orderUrl = url('menu.php');
         </div>
         <div class="hero-visual">
           <span class="bean b1"></span><span class="bean b2"></span><span class="bean b3"></span><span class="bean b4"></span>
-          <img src="<?= asset('images/ui/hero.svg') ?>" alt="Secangkir kopi KopiKita" width="430" height="430">
+          <img src="<?= asset('images/ui/hero.jpg') ?>" alt="Secangkir kopi KopiKita" width="430" height="430">
         </div>
       </div>
       <?php endforeach; ?>
@@ -79,7 +79,7 @@ $orderUrl = url('menu.php');
     <div class="panel-box reveal" style="position:relative;overflow:hidden">
       <div class="about-watermark" aria-hidden="true">KopiKita</div>
       <div class="about-grid">
-        <div class="about-img"><img src="<?= asset('images/ui/about-1.svg') ?>" alt="Kopi hangat" loading="lazy"></div>
+        <div class="about-img"><img src="<?= asset('images/ui/about-1.jpg') ?>" alt="Kopi hangat" loading="lazy"></div>
         <div class="about-text">
           <span class="eyebrow" style="color:var(--caramel);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase">Tentang Kami</span>
           <h2>Sebuah kedai yang dibangun oleh <em>pecinta kopi.</em></h2>
@@ -91,7 +91,7 @@ $orderUrl = url('menu.php');
             <div class="feature"><div class="fi">❦</div><h4>Ramah Lingkungan</h4><p>Kemasan dan ampas kopi didaur ulang.</p></div>
           </div>
         </div>
-        <div class="about-img"><img src="<?= asset('images/ui/about-2.svg') ?>" alt="Suasana kedai" loading="lazy"></div>
+        <div class="about-img"><img src="<?= asset('images/ui/about-2.jpg') ?>" alt="Suasana kedai" loading="lazy"></div>
       </div>
       <div class="stats">
         <div class="stat"><b>2026</b><span>Mulai Berdiri</span></div>

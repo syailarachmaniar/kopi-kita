@@ -46,8 +46,8 @@ const PAYMENT_METHODS = ['cash' => 'Cash di Kasir', 'qris' => 'QRIS (simulasi)',
 const GALLERY_COLLECTIONS = ['coffee' => 'Coffee', 'drinks' => 'Drinks', 'food' => 'Food', 'ambience' => 'Ambience', 'desserts' => 'Desserts'];
 
 // Info kedai (simulasi)
-const SHOP_ADDRESS = 'Jl. Kopi Nusantara No. 12, Makassar, Sulawesi Selatan';
-const SHOP_PHONE = '0812-3456-7890';
-const SHOP_WA = '6281234567890';
-const SHOP_EMAIL = 'halo@kopikita.test';
+const SHOP_ADDRESS = 'Jl. Martapura Lama Km. 12, Sungai Tabuk Kota, Kab. Banjar, Kalimantan Selatan 70653';
+const SHOP_PHONE = '0895411195846';
+const SHOP_WA = '62895411195846';
+const SHOP_EMAIL = 'kopikitaandber@gmail.com';
 const SHOP_HOURS = 'Setiap hari, 08.00 – 22.00 WITA';

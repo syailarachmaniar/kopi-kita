@@ -216,6 +216,10 @@ main {
   gap: .65rem;
   color: var(--cream);
 }
+.brand img {
+  border-radius: 10px;
+  object-fit: cover;
+}
 .brand span {
   display: flex;
   flex-direction: column;
@@ -876,7 +880,7 @@ textarea.input {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  background: linear-gradient(180deg,rgba(26,15,10,.1),rgba(26,15,10,.9)),url('../images/ui/hero.svg') center/cover;
+  background: linear-gradient(180deg,rgba(26,15,10,.1),rgba(26,15,10,.9)),url('../images/ui/hero.jpg') center/cover;
 }
 .auth-art h2 {
   font-size: 2.3rem;
@@ -971,8 +975,11 @@ textarea.input {
   place-items: center;
 }
 .hero-visual img {
-  width: min(430px,100%);
-  border-radius: 50%;
+  width: min(310px,100%);
+  height: auto;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
   filter: drop-shadow(0 30px 40px rgba(0,0,0,.5));
   animation: float 6s ease-in-out infinite;
 }

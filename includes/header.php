@@ -12,7 +12,7 @@ $nav = ['home' => ['Home', 'index.php'], 'menu' => ['Menu', 'menu.php'], 'galler
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($pageTitle) ?> – <?= e(APP_NAME) ?></title>
 <meta name="description" content="<?= e(APP_NAME) ?> – <?= e(APP_SLOGAN) ?>">
-<link rel="icon" type="image/svg+xml" href="<?= asset('images/ui/favicon.svg') ?>">
+<link rel="icon" href="<?= ui_image('logo-mark', 'favicon') ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -20,21 +20,10 @@ $nav = ['home' => ['Home', 'index.php'], 'menu' => ['Menu', 'menu.php'], 'galler
 </head>
 <body class="site <?= e($bodyClass ?? '') ?>">
 <div class="bg-beans" aria-hidden="true"></div>
-<style>
-/* Dropdown kategori (disertakan di sini agar tetap rapi walau style.css belum diperbarui) */
-.nav-links .has-sub{position:relative}
-.nav-links .caret{font-size:.7em;opacity:.7}
-.nav-links .sub{position:absolute;top:100%;left:0;min-width:200px;background:#3a2418;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:.5rem;list-style:none;margin:0;display:none;z-index:60;box-shadow:0 12px 30px rgba(0,0,0,.35)}
-.nav-links .has-sub:hover .sub,.nav-links .has-sub:focus-within .sub{display:block}
-.nav-links .sub li{display:block;margin:0}
-.nav-links .sub a{display:block;padding:.5rem .8rem;border-radius:8px;white-space:nowrap}
-.nav-links .sub a:hover{background:rgba(255,255,255,.07)}
-@media(max-width:900px){.nav-links .sub{position:static;display:block;box-shadow:none;border:0;background:transparent;padding:0 0 0 1rem}}
-</style>
 <header class="navbar-wrap">
   <nav class="navbar" aria-label="Navigasi utama">
     <a class="brand" href="<?= url('index.php') ?>">
-      <img src="<?= asset('images/ui/logo.svg') ?>" alt="" width="38" height="38">
+      <img src="<?= ui_image('logo-mark', 'logo') ?>" alt="" width="38" height="38">
       <span><b>KopiKita</b><small>Est. 2026</small></span>
     </a>
     <button class="nav-toggle" aria-label="Buka menu" aria-expanded="false" aria-controls="navMenu"><span></span><span></span><span></span></button>
